@@ -59,5 +59,6 @@ class AuthWrapper extends StatelessWidget {
       // User is logged out, show the login page
       return const LoginPage();
     }
+    
   }
 }
