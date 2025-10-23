@@ -45,26 +45,28 @@ class HomePage extends StatelessWidget {
             itemBuilder: (context, index) {
               final p = patients[index];
               return Card(
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 child: ListTile(
                   title: Text(p.name),
-                  subtitle: Text('Age: ${p.age} • Phone: ${p.phone}\n${p.notes}'),
+                  subtitle: Text(
+                    'Age: ${p.age}\n Problem: ${p.mainComplaint}\n Phone: ${p.phone}\n Note: ${p.notes}',
+                  ),
                   isThreeLine: true,
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-  icon: const Icon(Icons.edit),
-  onPressed: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => PatientFormPage(vm: patientVm, patient: p),
-      ),
-    );
-  },
-),
+                        icon: const Icon(Icons.edit),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  AddEditPatientPage(vm: patientVm, patient: p),
+                            ),
+                          );
+                        },
+                      ),
 
                       IconButton(
                         icon: const Icon(Icons.delete),
@@ -80,16 +82,16 @@ class HomePage extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-  onPressed: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => PatientFormPage(vm: patientVm),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => AddEditPatientPage(vm: patientVm),
+            ),
+          );
+        },
+        child: const Icon(Icons.add),
       ),
-    );
-  },
-  child: const Icon(Icons.add),
-),
     );
   }
 

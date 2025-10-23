@@ -1,19 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
   <base href="$FLUTTER_BASE_HREF">
   <meta name="google-signin-client_id" content="1042051267417-j2e41jntcqog6eqq7ai0621bbl4crtca.apps.googleusercontent.com">
 
@@ -30,10 +17,52 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>hospital_management</title>
+  <title>Reception - Hospital Management</title>
   <link rel="manifest" href="manifest.json">
+
+  <style>
+    /* Full screen loader styling */
+    body, html {
+      height: 100%;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f5f5f5;
+    }
+
+    #loader-container {
+      text-align: center;
+    }
+
+    .spinner {
+      border: 8px solid #f3f3f3; /* Light gray */
+      border-top: 8px solid #3498db; /* Blue */
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    #loading-text {
+      font-size: 18px;
+      color: #555;
+    }
+  </style>
 </head>
 <body>
+  <div id="loader-container">
+    <div class="spinner"></div>
+    <div id="loading-text">Loading Hospital Management...</div>
+  </div>
+
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

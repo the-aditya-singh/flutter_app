@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'HMS - MVVM',
+        title: 'Reception - Hospital Management',
         theme: ThemeData(primarySwatch: Colors.blue),
         home: const AuthWrapper(), // Use a wrapper to handle login/home state
       ),
