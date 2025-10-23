@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hospital_management/views/patient_form_page.dart';
 import 'package:provider/provider.dart';
 import 'package:hospital_management/models/patient.dart';
 import 'package:hospital_management/viewmodels/patient_viewmodel.dart';
@@ -54,10 +55,17 @@ class HomePage extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.edit),
-                        onPressed: () =>
-                            _showPatientForm(context, patientVm, patient: p),
-                      ),
+  icon: const Icon(Icons.edit),
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PatientFormPage(vm: patientVm, patient: p),
+      ),
+    );
+  },
+),
+
                       IconButton(
                         icon: const Icon(Icons.delete),
                         onPressed: () =>
@@ -72,9 +80,16 @@ class HomePage extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _showPatientForm(context, patientVm),
-        child: const Icon(Icons.add),
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PatientFormPage(vm: patientVm),
       ),
+    );
+  },
+  child: const Icon(Icons.add),
+),
     );
   }
 
@@ -100,176 +115,4 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
-
- void _showPatientForm(BuildContext context, PatientViewModel vm, {Patient? patient}) {
-  final nameCtrl = TextEditingController(text: patient?.name ?? '');
-  final ageCtrl = TextEditingController(text: patient?.age.toString() ?? '');
-  final phoneCtrl = TextEditingController(text: patient?.phone ?? '');
-  final notesCtrl = TextEditingController(text: patient?.notes ?? '');
-
-  String gender = patient?.gender ?? 'Male';
-  String mainComplaint = patient?.mainComplaint ?? 'Cyst';
-  String symptomDuration = patient?.symptomDuration ?? 'Less than 1 Week';
-
-  // Controllers for "Other" text fields
-  final otherComplaintCtrl = TextEditingController();
-  final otherDurationCtrl = TextEditingController();
-
-  showDialog(
-    context: context,
-    builder: (_) => StatefulBuilder(
-      builder: (context, setState) {
-        return AlertDialog(
-          title: Text(patient == null ? 'Add Patient' : 'Edit Patient'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: nameCtrl,
-                  decoration: const InputDecoration(labelText: 'Name'),
-                ),
-                TextField(
-                  controller: ageCtrl,
-                  decoration: const InputDecoration(labelText: 'Age'),
-                  keyboardType: TextInputType.number,
-                ),
-                TextField(
-                  controller: phoneCtrl,
-                  decoration: const InputDecoration(labelText: 'Phone'),
-                  keyboardType: TextInputType.phone,
-                ),
-                const SizedBox(height: 12),
-
-                // Gender Dropdown
-                DropdownButtonFormField<String>(
-                  initialValue: gender,
-                  items: ['Male', 'Female', 'Other']
-                      .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                      .toList(),
-                  decoration: const InputDecoration(labelText: 'Gender'),
-                  onChanged: (v) => setState(() => gender = v ?? 'Male'),
-                ),
-
-                // Main Complaint Dropdown
-                DropdownButtonFormField<String>(
-                  initialValue: mainComplaint,
-                  items: ['Cyst', 'Fever', 'Stone', 'Acidity', 'Gas', 'Other']
-                      .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                      .toList(),
-                  decoration:
-                      const InputDecoration(labelText: 'Main Complaint'),
-                  onChanged: (v) => setState(() => mainComplaint = v ?? 'Cyst'),
-                ),
-
-                // Show text field if "Other" selected for Complaint
-                if (mainComplaint == 'Other')
-                  TextField(
-                    controller: otherComplaintCtrl,
-                    decoration: const InputDecoration(
-                        labelText: 'Enter your main complaint'),
-                  ),
-
-                // Symptom Duration Dropdown
-                DropdownButtonFormField<String>(
-                  initialValue: symptomDuration,
-                  items: [
-                    'Less than 1 Week',
-                    '2 to 4 Weeks',
-                    '1 Month',
-                    '2 Months',
-                    '3 Months',
-                    '6 Months',
-                    '1 Year',
-                    'Other'
-                  ]
-                      .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                      .toList(),
-                  decoration: const InputDecoration(
-                      labelText: 'Duration of Symptoms'),
-                  onChanged: (v) =>
-                      setState(() => symptomDuration = v ?? 'Less than 1 Week'),
-                ),
-
-                // Show text field if "Other" selected for Duration
-                if (symptomDuration == 'Other')
-                  TextField(
-                    controller: otherDurationCtrl,
-                    decoration: const InputDecoration(
-                        labelText: 'Enter symptom duration'),
-                  ),
-
-                const SizedBox(height: 12),
-                TextField(
-                  controller: notesCtrl,
-                  decoration: const InputDecoration(labelText: 'Notes'),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () async {
-                final name = nameCtrl.text.trim();
-                final age = int.tryParse(ageCtrl.text.trim()) ?? 0;
-                final phone = phoneCtrl.text.trim();
-                final notes = notesCtrl.text.trim();
-
-                // handle custom fields
-                final finalComplaint = mainComplaint == 'Other'
-                    ? otherComplaintCtrl.text.trim().isEmpty
-                        ? 'Other'
-                        : otherComplaintCtrl.text.trim()
-                    : mainComplaint;
-
-                final finalDuration = symptomDuration == 'Other'
-                    ? otherDurationCtrl.text.trim().isEmpty
-                        ? 'Other'
-                        : otherDurationCtrl.text.trim()
-                    : symptomDuration;
-
-                if (name.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Name required')),
-                  );
-                  return;
-                }
-
-                Navigator.pop(context);
-
-                if (patient == null) {
-                  await vm.addPatient(
-                    name: name,
-                    age: age,
-                    phone: phone,
-                    gender: gender,
-                    mainComplaint: finalComplaint,
-                    symptomDuration: finalDuration,
-                    notes: notes,
-                  );
-                } else {
-                  await vm.updatePatient(
-                    id: patient.id,
-                    name: name,
-                    age: age,
-                    phone: phone,
-                    gender: gender,
-                    mainComplaint: finalComplaint,
-                    symptomDuration: finalDuration,
-                    notes: notes,
-                  );
-                }
-              },
-              child: const Text('Save'),
-            ),
-          ],
-        );
-      },
-    ),
-  );
-}
 }
