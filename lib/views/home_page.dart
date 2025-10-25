@@ -27,7 +27,11 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.teal,
         title: const Text(
           '🏥 Patient Records',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20,color: Colors.white),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+            color: Colors.white,
+          ),
         ),
         actions: [
           IconButton(
@@ -87,7 +91,7 @@ class _HomePageState extends State<HomePage> {
                           SvgPicture.asset(
                             'image/empty-list.svg',
                             height: 200,
-                            semanticsLabel: 'no data'
+                            semanticsLabel: 'no data',
                           ),
                           const SizedBox(height: 20),
                           const Text(
@@ -121,17 +125,22 @@ class _HomePageState extends State<HomePage> {
                                 horizontal: 20, vertical: 10),
                             leading: CircleAvatar(
                               radius: 25,
-                              backgroundColor: Colors.blue.shade100,
+                              backgroundColor: Colors.teal.shade100,
                               child: Text(
                                 p.name[0].toUpperCase(),
                                 style: const TextStyle(
-                                    color: Colors.blue, fontSize: 20),
+                                  color: Colors.teal,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                             title: Text(
                               p.name,
                               style: const TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 18),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
                             ),
                             subtitle: Padding(
                               padding: const EdgeInsets.only(top: 5),
@@ -140,17 +149,26 @@ class _HomePageState extends State<HomePage> {
                                 style: const TextStyle(height: 1.4),
                               ),
                             ),
+
+                            // 🌟 Improved Popup Menu
                             trailing: PopupMenuButton<String>(
+                              color: Colors.white,
+                              elevation: 6,
+                              offset: const Offset(0, 40),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              icon: const Icon(
+                                Icons.more_vert,
+                                color: Colors.teal,
                               ),
                               onSelected: (value) async {
                                 if (value == 'edit') {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (_) => AddEditPatientPage(
-                                          vm: patientVm, patient: p),
+                                      builder: (_) =>
+                                          AddEditPatientPage(vm: patientVm, patient: p),
                                     ),
                                   );
                                 } else if (value == 'delete') {
@@ -158,10 +176,38 @@ class _HomePageState extends State<HomePage> {
                                 }
                               },
                               itemBuilder: (context) => [
-                                const PopupMenuItem(
-                                    value: 'edit', child: Text('Edit')),
-                                const PopupMenuItem(
-                                    value: 'delete', child: Text('Delete')),
+                                PopupMenuItem(
+                                  value: 'edit',
+                                  child: Row(
+                                    children: const [
+                                      Icon(Icons.edit, color: Colors.teal),
+                                      SizedBox(width: 10),
+                                      Text(
+                                        'Edit',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const PopupMenuDivider(),
+                                PopupMenuItem(
+                                  value: 'delete',
+                                  child: Row(
+                                    children: const [
+                                      Icon(Icons.delete, color: Colors.redAccent),
+                                      SizedBox(width: 10),
+                                      Text(
+                                        'Delete',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.redAccent,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -187,8 +233,11 @@ class _HomePageState extends State<HomePage> {
             ),
           );
         },
-        icon: const Icon(Icons.add,color: Colors.white,),
-        label: const Text('Add Patient',style: TextStyle(color: Colors.white),),
+        icon: const Icon(Icons.add, color: Colors.white),
+        label: const Text(
+          'Add Patient',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
     );
   }
@@ -207,14 +256,19 @@ class _HomePageState extends State<HomePage> {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10))),
+              backgroundColor: Colors.red,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
             onPressed: () async {
               Navigator.pop(context);
               await vm.deletePatient(id);
             },
-            child: const Text('Delete',style: TextStyle(color: Colors.white),),
+            child: const Text(
+              'Delete',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
