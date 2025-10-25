@@ -213,8 +213,9 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
           controller: _phoneController,
           keyboardType: TextInputType.phone,
           decoration: const InputDecoration(labelText: 'Phone Number'),
-          validator: (v) =>
-              v == null || v.length < 10 ? 'Enter valid phone number' : null,
+          validator: (v) => v == null || v.length < 10 || v.length > 14
+              ? 'Enter valid phone number'
+              : null,
         ),
       ),
       _buildStep(
@@ -225,8 +226,7 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
               .map((g) => DropdownMenuItem(value: g, child: Text(g)))
               .toList(),
           onChanged: (val) => setState(() => _selectedGender = val),
-          validator: (v) =>
-              v == null || v.isEmpty ? 'Select gender' : null,
+          validator: (v) => v == null || v.isEmpty ? 'Select gender' : null,
         ),
       ),
       _buildStep(
@@ -250,7 +250,8 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
                 padding: const EdgeInsets.only(top: 12.0),
                 child: TextFormField(
                   decoration: const InputDecoration(
-                      labelText: 'Enter custom complaint'),
+                    labelText: 'Enter custom complaint',
+                  ),
                   controller: TextEditingController(text: _customComplaint)
                     ..selection = TextSelection.fromPosition(
                       TextPosition(offset: _customComplaint?.length ?? 0),
@@ -284,7 +285,8 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
                 padding: const EdgeInsets.only(top: 12.0),
                 child: TextFormField(
                   decoration: const InputDecoration(
-                      labelText: 'Enter custom duration'),
+                    labelText: 'Enter custom duration',
+                  ),
                   controller: TextEditingController(text: _customDuration)
                     ..selection = TextSelection.fromPosition(
                       TextPosition(offset: _customDuration?.length ?? 0),
@@ -346,9 +348,9 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
                     const SizedBox(width: 80),
                   ElevatedButton(
                     onPressed: _nextStep,
-                    child: Text(_currentStep == steps.length - 1
-                        ? 'Finish'
-                        : 'Next'),
+                    child: Text(
+                      _currentStep == steps.length - 1 ? 'Finish' : 'Next',
+                    ),
                   ),
                 ],
               ),
