@@ -51,7 +51,6 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
   @override
   void initState() {
     super.initState();
-
     if (widget.patient != null) {
       _nameController.text = widget.patient!.name;
       _ageController.text = widget.patient!.age.toString();
@@ -61,7 +60,6 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
       _selectedComplaint = widget.patient!.mainComplaint;
       _selectedDuration = widget.patient!.symptomDuration;
 
-      // Handle custom entries
       if (!_baseComplaints.contains(_selectedComplaint)) {
         _customComplaint = _selectedComplaint;
         _selectedComplaint = 'Other';
@@ -73,22 +71,12 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
     }
   }
 
-  @override
-  void dispose() {
-    _pageController.dispose();
-    _nameController.dispose();
-    _ageController.dispose();
-    _phoneController.dispose();
-    _notesController.dispose();
-    super.dispose();
-  }
-
   void _nextStep() {
     if (_formKey.currentState!.validate()) {
-      if (_currentStep < 6) {
+      if (_currentStep < _steps().length - 1) {
         setState(() => _currentStep++);
         _pageController.nextPage(
-          duration: const Duration(milliseconds: 350),
+          duration: const Duration(milliseconds: 400),
           curve: Curves.easeInOut,
         );
       } else {
@@ -101,7 +89,7 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
     if (_currentStep > 0) {
       setState(() => _currentStep--);
       _pageController.previousPage(
-        duration: const Duration(milliseconds: 350),
+        duration: const Duration(milliseconds: 400),
         curve: Curves.easeInOut,
       );
     }
@@ -121,8 +109,9 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
     final duration = _selectedDuration == 'Other'
         ? (_customDuration?.trim() ?? '')
         : (_selectedDuration ?? '');
-    final notesText = _notesController.text.trim();
-    final notes = notesText.isEmpty ? 'No notes' : notesText;
+    final notes = _notesController.text.trim().isEmpty
+        ? 'No notes'
+        : _notesController.text.trim();
 
     if (widget.patient == null) {
       await vm.addPatient(
@@ -150,22 +139,25 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
     navigator.pop();
   }
 
-  Widget _buildStep(String question, Widget field) {
+  Widget _buildQuestion(String question, IconData icon, Widget field) {
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Center(
         child: SingleChildScrollView(
           child: Column(
             children: [
+              Icon(icon, size: 50, color: Colors.teal.shade600),
+              const SizedBox(height: 15),
               Text(
                 question,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w600,
+                  color: Colors.black87,
                 ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 25),
               field,
             ],
           ),
@@ -174,32 +166,25 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
     );
   }
 
-  List<String> _complaintsList() {
-    return [..._baseComplaints, 'Other'];
-  }
-
-  List<String> _durationsList() {
-    return [..._baseDurations, 'Other'];
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final steps = [
-      _buildStep(
+  List<Widget> _steps() {
+    return [
+      _buildQuestion(
         "What is the patient's full name?",
+        Icons.person_outline,
         TextFormField(
           controller: _nameController,
-          decoration: const InputDecoration(labelText: 'Full Name'),
+          decoration: _inputDecoration('Full Name', Icons.badge_outlined),
           validator: (v) =>
               v == null || v.isEmpty ? 'Please enter the name' : null,
         ),
       ),
-      _buildStep(
+      _buildQuestion(
         'How old is the patient?',
+        Icons.cake_outlined,
         TextFormField(
           controller: _ageController,
           keyboardType: TextInputType.number,
-          decoration: const InputDecoration(labelText: 'Age'),
+          decoration: _inputDecoration('Age', Icons.numbers),
           validator: (v) {
             final val = int.tryParse(v ?? '');
             if (val == null || val <= 0) return 'Enter valid age';
@@ -207,21 +192,24 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
           },
         ),
       ),
-      _buildStep(
+      _buildQuestion(
         "What is the patient's phone number?",
+        Icons.phone,
         TextFormField(
           controller: _phoneController,
           keyboardType: TextInputType.phone,
-          decoration: const InputDecoration(labelText: 'Phone Number'),
-          validator: (v) => v == null || v.length < 10 || v.length > 14
+          decoration: _inputDecoration('Phone Number', Icons.phone_android),
+          validator: (v) => v == null || v.length < 10
               ? 'Enter valid phone number'
               : null,
         ),
       ),
-      _buildStep(
+      _buildQuestion(
         "Select the patient's gender",
+        Icons.transgender,
         DropdownButtonFormField<String>(
-          initialValue: _selectedGender,
+          decoration: _inputDecoration('Gender', Icons.people),
+          value: _selectedGender,
           items: _genders
               .map((g) => DropdownMenuItem(value: g, child: Text(g)))
               .toList(),
@@ -229,13 +217,15 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
           validator: (v) => v == null || v.isEmpty ? 'Select gender' : null,
         ),
       ),
-      _buildStep(
+      _buildQuestion(
         'What is the main complaint?',
+        Icons.medical_information_outlined,
         Column(
           children: [
             DropdownButtonFormField<String>(
-              initialValue: _selectedComplaint,
-              items: _complaintsList()
+              decoration: _inputDecoration('Complaint', Icons.local_hospital),
+              value: _selectedComplaint,
+              items: [..._baseComplaints, 'Other']
                   .map((c) => DropdownMenuItem(value: c, child: Text(c)))
                   .toList(),
               onChanged: (val) => setState(() {
@@ -247,30 +237,24 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
             ),
             if (_selectedComplaint == 'Other')
               Padding(
-                padding: const EdgeInsets.only(top: 12.0),
+                padding: const EdgeInsets.only(top: 12),
                 child: TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Enter custom complaint',
-                  ),
-                  controller: TextEditingController(text: _customComplaint)
-                    ..selection = TextSelection.fromPosition(
-                      TextPosition(offset: _customComplaint?.length ?? 0),
-                    ),
+                  decoration: _inputDecoration('Enter complaint', Icons.edit),
                   onChanged: (val) => _customComplaint = val,
-                  validator: (v) =>
-                      v == null || v.isEmpty ? 'Enter complaint' : null,
                 ),
               ),
           ],
         ),
       ),
-      _buildStep(
+      _buildQuestion(
         'How long has the patient had these symptoms?',
+        Icons.timelapse,
         Column(
           children: [
             DropdownButtonFormField<String>(
-              initialValue: _selectedDuration,
-              items: _durationsList()
+              decoration: _inputDecoration('Duration', Icons.access_time),
+              value: _selectedDuration,
+              items: [..._baseDurations, 'Other']
                   .map((d) => DropdownMenuItem(value: d, child: Text(d)))
                   .toList(),
               onChanged: (val) => setState(() {
@@ -282,80 +266,143 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
             ),
             if (_selectedDuration == 'Other')
               Padding(
-                padding: const EdgeInsets.only(top: 12.0),
+                padding: const EdgeInsets.only(top: 12),
                 child: TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Enter custom duration',
-                  ),
-                  controller: TextEditingController(text: _customDuration)
-                    ..selection = TextSelection.fromPosition(
-                      TextPosition(offset: _customDuration?.length ?? 0),
-                    ),
+                  decoration: _inputDecoration('Enter duration', Icons.edit),
                   onChanged: (val) => _customDuration = val,
-                  validator: (v) =>
-                      v == null || v.isEmpty ? 'Enter duration' : null,
                 ),
               ),
           ],
         ),
       ),
-      _buildStep(
+      _buildQuestion(
         'Any additional notes about the patient?',
+        Icons.note_alt_outlined,
         TextFormField(
           controller: _notesController,
-          decoration: const InputDecoration(
-            labelText: 'Notes (Optional)',
-            hintText: 'Enter any additional information...',
-          ),
           maxLines: 5,
-          textInputAction: TextInputAction.done,
+          decoration:
+              _inputDecoration('Notes (Optional)', Icons.sticky_note_2),
         ),
       ),
     ];
+  }
+
+  InputDecoration _inputDecoration(String label, IconData icon) {
+    return InputDecoration(
+      labelText: label,
+      prefixIcon: Icon(icon, color: Colors.teal),
+      filled: true,
+      fillColor: Colors.white,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide.none,
+      ),
+      contentPadding:
+          const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final steps = _steps();
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text(widget.patient == null ? 'Add Patient' : 'Edit Patient'),
+        title: Text(
+          widget.patient == null ? 'Add Patient' : 'Edit Patient',
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
+        elevation: 0,
+        backgroundColor: Colors.teal.shade600,
       ),
-      body: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            LinearProgressIndicator(
-              value: (_currentStep + 1) / steps.length,
-              backgroundColor: Colors.grey.shade200,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            Expanded(
-              child: PageView(
-                controller: _pageController,
-                physics: const NeverScrollableScrollPhysics(),
-                children: steps,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  if (_currentStep > 0)
-                    ElevatedButton(
-                      onPressed: _previousStep,
-                      child: const Text('Back'),
-                    )
-                  else
-                    const SizedBox(width: 80),
-                  ElevatedButton(
-                    onPressed: _nextStep,
-                    child: Text(
-                      _currentStep == steps.length - 1 ? 'Finish' : 'Next',
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.teal.shade100, Colors.teal.shade50],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              // 🧭 Progress Bar
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                child: Column(
+                  children: [
+                    LinearProgressIndicator(
+                      value: (_currentStep + 1) / steps.length,
+                      color: Colors.teal,
+                      backgroundColor: Colors.teal.shade100,
+                      minHeight: 6,
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 8),
+                    Text(
+                      'Step ${_currentStep + 1} of ${steps.length}',
+                      style: const TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+
+              // 📋 Page Content
+              Expanded(
+                child: PageView(
+                  controller: _pageController,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: steps,
+                ),
+              ),
+
+              // 🧭 Navigation Buttons
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    if (_currentStep > 0)
+                      ElevatedButton.icon(
+                        onPressed: _previousStep,
+                        icon: const Icon(Icons.arrow_back),
+                        label: const Text('Back'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey.shade400,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                        ),
+                      )
+                    else
+                      const SizedBox(width: 100),
+                    ElevatedButton.icon(
+                      onPressed: _nextStep,
+                      icon: Icon(
+                          _currentStep == steps.length - 1
+                              ? Icons.check_circle
+                              : Icons.arrow_forward,
+                          color: Colors.white),
+                      label: Text(
+                        _currentStep == steps.length - 1 ? 'Finish' : 'Next',
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.teal.shade600,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 25, vertical: 14),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
