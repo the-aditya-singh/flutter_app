@@ -120,7 +120,7 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
         notes: notes,
       );
     }
-
+    if(!mounted) return;
     Navigator.pop(context);
   }
 
@@ -176,7 +176,7 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
 
               // GENDER
               DropdownButtonFormField<String>(
-                value: _selectedGender,
+                initialValue: _selectedGender,
                 decoration: const InputDecoration(labelText: 'Gender'),
                 items: _genders
                     .map((g) => DropdownMenuItem(value: g, child: Text(g)))
@@ -189,7 +189,7 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
 
               // MAIN COMPLAINT
               DropdownButtonFormField<String>(
-                value: _selectedComplaint,
+                initialValue: _selectedComplaint,
                 decoration: const InputDecoration(labelText: 'Main Complaint'),
                 items: _complaints
                     .map((c) => DropdownMenuItem(value: c, child: Text(c)))
@@ -218,7 +218,7 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
 
               // SYMPTOM DURATION
               DropdownButtonFormField<String>(
-                value: _selectedDuration,
+                initialValue: _selectedDuration,
                 decoration:
                     const InputDecoration(labelText: 'Duration of Symptoms'),
                 items: _durations
