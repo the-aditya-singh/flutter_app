@@ -83,10 +83,9 @@ class _HomePageState extends State<HomePage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          // 💡 Replace this GIF path with your own local asset
                           Image.asset(
-                            'assets/empty_list.gif',
-                            height: 180,
+                            'assets/image/empty-list.jpg',
+                            height: 200,
                           ),
                           const SizedBox(height: 20),
                           const Text(

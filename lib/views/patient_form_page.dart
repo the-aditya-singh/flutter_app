@@ -209,7 +209,7 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
         Icons.transgender,
         DropdownButtonFormField<String>(
           decoration: _inputDecoration('Gender', Icons.people),
-          value: _selectedGender,
+          initialValue: _selectedGender,
           items: _genders
               .map((g) => DropdownMenuItem(value: g, child: Text(g)))
               .toList(),
@@ -224,7 +224,7 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
           children: [
             DropdownButtonFormField<String>(
               decoration: _inputDecoration('Complaint', Icons.local_hospital),
-              value: _selectedComplaint,
+              initialValue: _selectedComplaint,
               items: [..._baseComplaints, 'Other']
                   .map((c) => DropdownMenuItem(value: c, child: Text(c)))
                   .toList(),
@@ -253,7 +253,7 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
           children: [
             DropdownButtonFormField<String>(
               decoration: _inputDecoration('Duration', Icons.access_time),
-              value: _selectedDuration,
+              initialValue: _selectedDuration,
               items: [..._baseDurations, 'Other']
                   .map((d) => DropdownMenuItem(value: d, child: Text(d)))
                   .toList(),
