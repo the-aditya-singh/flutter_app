@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hospital_management/views/patient_form_page.dart';
 import 'package:provider/provider.dart';
 import 'package:hospital_management/models/patient.dart';
@@ -83,9 +84,10 @@ class _HomePageState extends State<HomePage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Image.asset(
-                            'assets/image/empty-list.jpg',
+                          SvgPicture.asset(
+                            'image/empty-list.svg',
                             height: 200,
+                            semanticsLabel: 'no data'
                           ),
                           const SizedBox(height: 20),
                           const Text(
