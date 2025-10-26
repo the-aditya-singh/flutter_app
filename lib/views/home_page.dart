@@ -153,14 +153,15 @@ class _HomePageState extends State<HomePage> {
                             // 🌟 Improved Popup Menu
                             trailing: PopupMenuButton<String>(
                               color: Colors.white,
+                             tooltip: "Options",
+                              position: PopupMenuPosition.over,
                               elevation: 6,
-                              offset: const Offset(0, 40),
+                              offset: const Offset(-10, 30),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15),
                               ),
                               icon: const Icon(
                                 Icons.more_vert,
-                                color: Colors.teal,
                               ),
                               onSelected: (value) async {
                                 if (value == 'edit') {
