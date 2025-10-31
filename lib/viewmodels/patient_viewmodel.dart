@@ -13,7 +13,19 @@ class PatientViewModel extends ChangeNotifier {
         .snapshots()
         .map((snap) => snap.docs.map((d) => Patient.fromDoc(d)).toList());
   }
+  
+//24 hrs patients stream
+Stream<List<Patient>> watchRecentPatients() {
+  final twentyFourHoursAgo = Timestamp.fromDate(
+    DateTime.now().subtract(const Duration(hours: 24)),
+  );
 
+  return patientsCol
+      .where('createdAt', isGreaterThanOrEqualTo: twentyFourHoursAgo)
+      .orderBy('createdAt', descending: true)
+      .snapshots()
+      .map((snap) => snap.docs.map((d) => Patient.fromDoc(d)).toList());
+}
   /// Add a new patient record
   Future<void> addPatient({
     required String name,
@@ -67,3 +79,4 @@ class PatientViewModel extends ChangeNotifier {
     await patientsCol.doc(id).delete();
   }
 }
+

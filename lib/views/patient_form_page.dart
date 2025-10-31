@@ -199,9 +199,8 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
           controller: _phoneController,
           keyboardType: TextInputType.phone,
           decoration: _inputDecoration('Phone Number', Icons.phone_android),
-          validator: (v) => v == null || v.length < 10
-              ? 'Enter valid phone number'
-              : null,
+          validator: (v) =>
+              v == null || v.length < 10 ? 'Enter valid phone number' : null,
         ),
       ),
       _buildQuestion(
@@ -225,9 +224,10 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
             DropdownButtonFormField<String>(
               decoration: _inputDecoration('Complaint', Icons.local_hospital),
               initialValue: _selectedComplaint,
-              items: [..._baseComplaints, 'Other']
-                  .map((c) => DropdownMenuItem(value: c, child: Text(c)))
-                  .toList(),
+              items: [
+                ..._baseComplaints,
+                'Other',
+              ].map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
               onChanged: (val) => setState(() {
                 _selectedComplaint = val;
                 if (val != 'Other') _customComplaint = null;
@@ -239,8 +239,17 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
               Padding(
                 padding: const EdgeInsets.only(top: 12),
                 child: TextFormField(
+                  initialValue:
+                      _customComplaint, // ✅ show saved custom complaint
                   decoration: _inputDecoration('Enter complaint', Icons.edit),
                   onChanged: (val) => _customComplaint = val,
+                  validator: (v) {
+                    if (_selectedComplaint == 'Other' &&
+                        (v == null || v.trim().isEmpty)) {
+                      return 'Please enter the complaint';
+                    }
+                    return null;
+                  },
                 ),
               ),
           ],
@@ -254,9 +263,10 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
             DropdownButtonFormField<String>(
               decoration: _inputDecoration('Duration', Icons.access_time),
               initialValue: _selectedDuration,
-              items: [..._baseDurations, 'Other']
-                  .map((d) => DropdownMenuItem(value: d, child: Text(d)))
-                  .toList(),
+              items: [
+                ..._baseDurations,
+                'Other',
+              ].map((d) => DropdownMenuItem(value: d, child: Text(d))).toList(),
               onChanged: (val) => setState(() {
                 _selectedDuration = val;
                 if (val != 'Other') _customDuration = null;
@@ -268,8 +278,16 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
               Padding(
                 padding: const EdgeInsets.only(top: 12),
                 child: TextFormField(
+                  initialValue: _customDuration, // ✅ show saved custom duration
                   decoration: _inputDecoration('Enter duration', Icons.edit),
                   onChanged: (val) => _customDuration = val,
+                  validator: (v) {
+                    if (_selectedDuration == 'Other' &&
+                        (v == null || v.trim().isEmpty)) {
+                      return 'Please enter the duration';
+                    }
+                    return null;
+                  },
                 ),
               ),
           ],
@@ -281,8 +299,7 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
         TextFormField(
           controller: _notesController,
           maxLines: 5,
-          decoration:
-              _inputDecoration('Notes (Optional)', Icons.sticky_note_2),
+          decoration: _inputDecoration('Notes (Optional)', Icons.sticky_note_2),
         ),
       ),
     ];
@@ -299,8 +316,7 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
         borderRadius: BorderRadius.circular(16),
         borderSide: BorderSide.none,
       ),
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
     );
   }
 
@@ -313,7 +329,10 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
       appBar: AppBar(
         title: Text(
           widget.patient == null ? 'Add Patient' : 'Edit Patient',
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
         elevation: 0,
@@ -333,7 +352,10 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
             children: [
               // 🧭 Progress Bar
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 10,
+                  horizontal: 20,
+                ),
                 child: Column(
                   children: [
                     LinearProgressIndicator(
@@ -363,19 +385,26 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
 
               // 🧭 Navigation Buttons
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 20,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     if (_currentStep > 0)
                       ElevatedButton.icon(
                         onPressed: _previousStep,
-                        icon: const Icon(Icons.arrow_back, color: Colors.white,),
-                        label: const Text('Back', style: TextStyle(color: Colors.white),),
+                        icon: const Icon(Icons.arrow_back, color: Colors.white),
+                        label: const Text(
+                          'Back',
+                          style: TextStyle(color: Colors.white),
+                        ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.teal.shade600,
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       )
                     else
@@ -383,10 +412,11 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
                     ElevatedButton.icon(
                       onPressed: _nextStep,
                       icon: Icon(
-                          _currentStep == steps.length - 1
-                              ? Icons.check_circle
-                              : Icons.arrow_forward,
-                          color: Colors.white),
+                        _currentStep == steps.length - 1
+                            ? Icons.check_circle
+                            : Icons.arrow_forward,
+                        color: Colors.white,
+                      ),
                       label: Text(
                         _currentStep == steps.length - 1 ? 'Finish' : 'Next',
                         style: const TextStyle(color: Colors.white),
@@ -394,9 +424,12 @@ class _AddEditPatientPageState extends State<AddEditPatientPage> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.teal.shade600,
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 25, vertical: 14),
+                          horizontal: 25,
+                          vertical: 14,
+                        ),
                       ),
                     ),
                   ],
